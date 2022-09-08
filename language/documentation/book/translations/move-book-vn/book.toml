@@ -1,0 +1,7 @@
+[book]
+authors = ["The Move Contributors"]
+description = "Move book maintained by the Move Vietnamese contributors."
+language = "vn"
+multilingual = false
+src = "src"
+title = "Move Book Tiếng Việt"
