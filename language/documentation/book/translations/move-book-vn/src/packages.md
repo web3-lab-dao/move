@@ -1,17 +1,17 @@
 # Packages
 
-Packages allow Move programmers to more easily re-use code and share it
-across projects. The Move package system allows programmers to easily:
-* Define a package containing Move code;
-* Parameterize a package by [named addresses](./address.md);
-* Import and use packages in other Move code and instantiate named addresses;
-* Build packages and generate associated compilation artifacts from packages; and
-* Work with a common interface around compiled Move artifacts.
+Packages cho phép lập trình viên Move tái sử dụng code dễ dàng và chia sẻ chúng
+giữa các projects. Move package system cho phép lập trình viên dễ dàng:
+* Khởi tạo một package bao gồm Move code;
+* Parameterize một package bằng [named addresses](./address.md);
+* Import và sử dụng packages trong những Move code khác nhau và khởi tạo named addresses;
+* Build packages và generate các artifacts liên quan từ packages
+* Làm việc với các interface phổ biến trong khi Move artifacts được biên soạn.
 
-## Package Layout and Manifest Syntax
+## Package Layout và Manifest Syntax
 
-A Move package source directory contains a `Move.toml` package manifest
-file along with a set of subdirectories:
+Một thư mục Move package source bao gồm một `Move.toml` package manifest
+file cùng với các thư mục con sau:
 
 ```
 a_move_package
@@ -23,29 +23,25 @@ a_move_package
 └── tests          (optional, test mode)
 ```
 
-The directories marked `required` _must_ be present in order for the directory
-to be considered a Move package and to be compiled. Optional directories can
-be present, and if so will be included in the compilation process. Depending on
-the mode that the package is built with (`test` or `dev`), the `tests` and
-`examples` directories will be included as well.
+Những thư mục đánh dấu `required` là _bắt buộc_ phải có để nhận dạng là một Move package và có thể được compiled. Thư mục Optional
+là tùy chọn, nếu có thì sẽ chứa các tiến trình tổng hợp. Phụ thuộc vào chế độ package được build (là `test` hay `dev`), Thư mục `tests` và
+`examples` cũng sẽ được bao gồm.
 
-The `sources` directory can contain both Move modules and Move scripts (both
-transaction scripts and modules containing script functions). The `examples`
-directory can hold additional code to be used only for development and/or
-tutorial purposes that will not be included when compiled outside `test` or
+Thư mục `sources` có thể bao gồm cả Move modules và Move scripts (cả
+transaction scripts và modules đều bao gồm script functions). Thư mục `examples`
+có thể chứa code bổ sung được sử dụng cho development và/hoặc
+mục đích hướng dẫn, có thể bao gồm khi được compiled bên ngoài `test` hay
 `dev` mode.
 
-A `scripts` directory is supported so transaction scripts can be separated
-from modules if that is desired by the package author. The `scripts`
-directory will always be included for compilation if it is present.
-Documentation will be built using any documentation templates present in
-the `doc_templates` directory.
+Thư mục `scripts` được hỗ trợ để transaction scripts có thể phân chia từ
+các modules theo mong muốn của package author. Thư mục `scripts`
+luôn được bao gồm cho quá trình compilation nếu thư mục này tồn tại.
+Tài liệu sẽ được xây dựng bằng các documentation templates có trong thư mục `doc_templates`.
 
 ### Move.toml
 
-The Move package manifest is defined within the `Move.toml` file and has the
-following syntax. Optional fields are marked with `*`, `+` denotes
-one or more elements:
+Move package manifest được định nghĩa trong `Move.toml` file và có thể có cấu trúc như dưới đây. 
+Những trường Optional đánh dấu bởi `*`, `+` biểu thị một hoặc vài thành phần:
 
 ```
 [package]
@@ -54,25 +50,25 @@ version = "<uint>.<uint>.<uint>" # e.g., "0.1.1"
 license* = <string>              # e.g., "MIT", "GPL", "Apache 2.0"
 authors* = [<string>]            # e.g., ["Joe Smith (joesmith@noemail.com)", "Jane Smith (janesmith@noemail.com)"]
 
-[addresses]  # (Optional section) Declares named addresses in this package and instantiates named addresses in the package graph
-# One or more lines declaring named addresses in the following format
+[addresses]  # (Tùy chọn) Định nghĩa named addresses trong package và khởi tạo named addresses trong package graph
+# Một hoặc vài dòng code khai báo named addresses với định dạng như dưới đây
 <addr_name> = "_" | "<hex_address>" # e.g., std = "_" or my_addr = "0xC0FFEECAFE"
 
-[dependencies] # (Optional section) Paths to dependencies and instantiations or renamings of named addresses from each dependency
-# One or more lines declaring dependencies in the following format
+[dependencies] # (Tùy chọn) Đường dẫn tới các dependencies và các instantiations hoặc việc đổi tên các named addresses từ mỗi dependency
+# Một hoặc vài dòng code khai báo có định dạng như sau
 <string> = { local = <string>, addr_subst* = { (<string> = (<string> | "<hex_address>"))+ } } # local dependencies
-<string> = { git = <URL ending in .git>, subdir=<path to dir containing Move.toml inside git repo>, rev=<git commit hash>, addr_subst* = { (<string> = (<string> | "<hex_address>"))+ } } # git dependencies
+<string> = { git = <URL ending in .git>, subdir=<đường dẫn tới thư mục chứa Move.toml trong git repo>, rev=<git commit hash>, addr_subst* = { (<string> = (<string> | "<hex_address>"))+ } } # git dependencies
 
-[dev-addresses] # (Optional section) Same as [addresses] section, but only included in "dev" and "test" modes
-# One or more lines declaring dev named addresses in the following format
+[dev-addresses] # (Tùy chọn) Tương tự như [addresses], nhưng chỉ được bao gồm trong chế độ "dev" và "test"
+# Một hoặc vài dòng code dưới đây định nghĩa dev named addresses
 <addr_name> = "_" | "<hex_address>" # e.g., std = "_" or my_addr = "0xC0FFEECAFE"
 
-[dev-dependencies] # (Optional section) Same as [dependencies] section, but only included in "dev" and "test" modes
-# One or more lines declaring dev dependencies in the following format
+[dev-dependencies] # (Tùy chọn) Tương tự như [dependencies], nhưng chỉ được bao gồm trong chế độ "dev" and "test"
+# Một hoặc vài dòng code dưới đây định nghĩa dev dependencies
 <string> = { local = <string>, addr_subst* = { (<string> = (<string> | <address>))+ } }
 ```
 
-An example of a minimal package manifest with one local dependency and one git dependency:
+Một ví dụ đơn giản cho package manifest với một local dependency và một git dependency:
 
 ```
 [package]
@@ -80,9 +76,8 @@ name = "AName"
 version = "0.0.0"
 ```
 
-An example of a more standard package manifest that also includes the Move
-standard library and instantiates the named address `Std` from it with the
-address value `0x1`:
+Một ví dụ về package manifest chuẩn bao gồm Move
+standard library và biểu diễn named address `Std` với địa chỉ `0x1`:
 
 ```
 [package]
@@ -100,28 +95,26 @@ LocalDep = { local = "projects/move-awesomeness", addr_subst = { "std" = "0x1" }
 # Git dependency
 MoveStdlib = { git = "https://github.com/diem/diem.git", subdir="language/move-stdlib", rev = "56ab033cc403b489e891424a629e76f643d4fb6b" }
 
-[dev-addresses] # For use when developing this module
+[dev-addresses] # Dùn khi phát triển module này
 address_to_be_filled_in = "0x101010101"
 ```
 
-Most of the sections in the package manifest are self explanatory, but named
-addresses can be a bit difficult to understand so it's worth examining them in
-a bit more detail.
+Hầu hết các thành phần trong package manifest tự bản thân đã giải thích, tuy nhiên named
+addresses có thể tương đổi khó hiểu đó ta nên biểu diễn chúng chi tiết một chút
 
-## Named Addresses During Compilation
+## Named Addresses Trong Quá Trình Compilation
 
-Recall that Move has [named addresses](./address.md) and that
-named addresses cannot be declared in Move. Because of this, until now
-named addresses and their values needed to be passed to the compiler on the
-command line. With the Move package system this is no longer needed, and
-you can declare named addresses in the package, instantiate other named
-addresses in scope, and rename named addresses from other packages within
-the Move package system manifest file. Let's go through each of these
-individually:
+Việc gọi tới Move có [named addresses](./address.md) và
+named addresses không thể được định nghĩa trong Move. Bởi vì lí do sau, cho đến khi
+named addresses và giá trị của chúng cần được thông qua compiler trong
+command line. Với Move package system điều này là không cần thiết, và bạn có thể 
+khai báo named addresses trong package, khới tạo named
+addresses khác trong phạm vi, và đổi tên named addresses từ các packages khác ở trong
+Move package system manifest file. Hãy tiếp tục theo dõi dưới đây:
 
-### Declaration
+### Khai báo
 
-Let's say we have a Move module in `example_pkg/sources/A.move` as follows:
+Chúng ta có Move module trong `example_pkg/sources/A.move` như dưới đây:
 
 ```move
 module named_addr::A {
@@ -129,8 +122,8 @@ module named_addr::A {
 }
 ```
 
-We could in `example_pkg/Move.toml` declare the named address `named_addr` in
-two different ways. The first:
+Trong `example_pkg/Move.toml` ta có thể khai báo named address `named_addr` bằng 
+hai cách. Thứ nhất:
 
 ```
 [package]
@@ -140,14 +133,14 @@ name = "ExamplePkg"
 named_addr = "_"
 ```
 
-Declares `named_addr` as a named address in the package `ExamplePkg` and
-that _this address can be any valid address value_. Therefore an importing
-package can pick the value of the named address `named_addr` to be any address
-it wishes. Intuitively you can think of this as parameterizing the package
-`ExamplePkg` by the named address `named_addr`, and the package can then be
-instantiated later on by an importing package.
+Khai báo `named_addr` là một named address trong package `ExamplePkg` và
+_this address có thể là địa chỉ hợp lệ bất kì value_. Do đó một
+package được import có thể lấy giá trị của named address `named_addr` tới bất kì address nào.
+Bạn có thể nghĩ tới việc tham số hóa package
+`ExamplePkg` bằng named address `named_addr`, và package có thể được
+khởi tạo sau bằng cách import package.
 
-`named_addr` can also be declared as:
+`named_addr` được định nghĩa như sau:
 
 ```
 [package]
@@ -157,43 +150,42 @@ name = "ExamplePkg"
 named_addr = "0xCAFE"
 ```
 
-which states that the named address `named_addr` is exactly `0xCAFE` and cannot be
-changed. This is useful so other importing packages can use this named
-address without needing to worry about the exact value assigned to it.
+Trong đó named address `named_addr` là `0xCAFE` và không thể thay đổi.
+Điều này có lợi cho việc import các packages khác, có thể sử dụng named
+address mà không cần phải lo về giá trị đã được gán cho nó.
 
-With these two different declaration methods, there are two ways that
-information about named addresses can flow in the package graph:
-* The former ("unassigned named addresses") allows named address values to flow
-  from the importation site to the declaration site.
-* The latter ("assigned named addresses") allows named address values to flow
-  from the declaration site upwards in the package graph to usage sites.
+Với hai phương thức khai báo khác nhau, có hai cách để
+thông tin về named addresses có thể chạy qua package graph:
+* The former ("unassigned named addresses") cho phép các giá trị named address
+  từ importation site tới declaration site.
+* The latter ("assigned named addresses") cho phép các giá trị named address
+  từ the declaration site lên trên package graph tới usage sites.
 
-With these two methods for flowing named address information throughout the
-package graph the rules around scoping and renaming become important to
-understand.
+Với hai phương thức truyền thông tin named address qua
+package graph, tiêu chuẩn về phạm vi và cách đổi tên trở nên cần thiết để hiểu.
 
-## Scoping and Renaming of Named Addresses
+## Scoping và Cách đổi tên Named Addresses
 
-A named address `N` in a package `P` is in scope if:
-1. It declares a named address `N`; or
-2. A package in one of `P`'s transitive dependencies declares the named address
-  `N` and there is a dependency path in the package graph between between `P` and the
-  declaring package of `N` with no renaming of `N`.
+Một named address `N` trong package `P` thuộc scope nếu:
+1. Khai báo một named address `N`; hoặc
+2. Một package là một trong `P`'s các dependencies định nghĩa named address
+  `N` và có một dependency path trong package graph giữa `P` và
+  khai báo package `N` và không được đổi tên `N`.
 
-Additionally, every named address in a package is exported. Because of this and
-the above scoping rules each package can be viewed as coming with a set of
-named addresses that will be brought into scope when the package is imported,
-e.g., if the `ExamplePkg` package was imported, that importation would bring
-into scope the `named_addr` named address. Because of this, if `P` imports two
-packages `P1` and `P2` both of which declare a named address `N` an issue
-arises in `P`: which "`N`" is meant when `N` is referred to in `P`? The one
-from `P1` or `P2`? To prevent this ambiguity around which package a named
-address is coming from, we enforce that the sets of scopes introduced by all
-dependencies in a package are disjoint, and provide a way to _rename named
-addresses_ when the package that brings them into scope is imported.
+Ngoài ra, mỗi named address trong package được export. Bởi vì điều này và
+scoping rules phía trên, mỗi package có thể được xem như đi cùng với một tập
+named addresses mà có thể được đưa tới scope khi package được import,
+e.g., Nếu `ExamplePkg` package được import, việc importation có thể đem đến
+scope `named_addr` named address. Bởi vì thế, nếu như `P` imports hai
+packages `P1` và `P2`, cùng được khai báo một named address `N`, một vấn đề
+xuất hiện ở `P`: "`N`" nào có ý nghĩa khi `N` được trỏ tới `P`? Một từ
+`P1` hay `P2`? Để ngăn điều này xảy ra trong package, một named
+address đến từ đâu, ta có thể bắt buộc một danh sách scopes được cung cấp bởi tất cả
+dependencies trong package sẽ được tách rời, và cung cấp _rename named
+addresses_ khi package có thể mang vào scope được import.
 
-Renaming a named address when importing can be done as follows in our `P`,
-`P1`, and `P2` example above:
+Thay đổi tên một named address khi import có thể hoàn thành như sau, trong `P`,
+`P1`, và `P2` ví dụ:
 
 ```
 [package]
@@ -204,8 +196,8 @@ P1 = { local = "some_path_to_P1", addr_subst = { "P1N" = "N" } }
 P2 = { local = "some_path_to_P2"  }
 ```
 
-With this renaming `N` refers to the `N` from `P2` and `P1N` will refer to `N`
-coming from `P1`:
+Với việc đổi tên `N` trỏ tới `N` từ `P2` và `P1N` trỏ tới `N`
+từ `P1`:
 
 ```
 module N::A {
@@ -213,27 +205,27 @@ module N::A {
 }
 ```
 
-It is important to note that _renaming is not local_: once a named address `N`
-has been renamed to `N2` in a package `P` all packages that import `P` will not
-see `N` but only `N2` unless `N` is reintroduced from outside of `P`. This is
-why rule (2) in the scoping rules at the start of this section specifies a
-"dependency path in the package graph between between `P` and the declaring
-package of `N` with no renaming of `N`."
+Điều này rất quan trọng _renaming không phải local_: khi một named address `N`
+được đổi tên thành `N2` trong package `P` tất cả packages import `P` sẽ không
+thể thấy `N` mà chỉ có `N2` trừ khi `N` được khai báo lại bên ngoài `P`. Điều này
+giải thích tại sao nguyên tắc (2) trong scoping rules tại khởi đầu của section này, chỉ định một
+"dependency trong package graph giữa `P` và khai báo
+package `N` mà không được đổi tên `N`."
 
-### Instantiation
+### Cách khởi tạo
 
-Named addresses can be instantiated multiple times across the package graph as
-long as it is always with the same value. It is an error if the same named
-address (regardless of renaming) is instantiated with differing values across
-the package graph.
+Named addresses có thể khởi tạo nhiều lần qua package graph miễn là
+nó luôn có cùng giá trị. Có một lỗi xuất hiện nếu cùng named
+address (bất kể đổi tên như nào) được khởi tạo với các giá trị khác nhau thông qua
+package graph.
 
-A Move package can only be compiled if all named addresses resolve to a value.
-This presents issues if the package wishes to expose an uninstantiated named
-address. This is what the `[dev-addresses]` section solves. This section can
-set values for named addresses, but cannot introduce any named addresses.
-Additionally, only the `[dev-addresses]` in the root package are included in
-`dev` mode. For example a root package with the following manifest would not compile
-outside of `dev` mode since `named_addr` would be uninstantiated:
+Một Move package có thể được compiled nếu toàn bộ named addresses có cùng một giá trị.
+Điều này sẽ có một vài vấn đề nếu như package mong muốn không được khởi tạo named
+address. Có nghĩa là `[dev-addresses]` được giải quyết. Phần này có thể
+đặt các giá trị cho named addresses, nhưng không thể đặt named addresses.
+Ngoài ra, chỉ `[dev-addresses]` trong root package được bao gồm trong
+`dev` mode. Ví dụ một root package với manifest dưới đây sẽ không được compile
+bên ngoài `dev` mode cho nếu như `named_addr` không được khởi tạo:
 
 ```
 [package]
@@ -246,22 +238,21 @@ named_addr = "_"
 named_addr = "0xC0FFEE"
 ```
 
-## Usage, Artifacts, and Data Structures
+## Usage, Artifacts, và Data Structures
 
-The Move package system comes with a command line option as part of the Move
-CLI `move <flags> <command> <command_flags>`. Unless a
-particular path is provided, all package commands will run in the current working
-directory. The full list of commands and flags for the Move CLI can be found by
-running `move --help`.
+Move package system đi cùng với command line option như làm một thành phần của Move
+CLI `move <flags> <command> <command_flags>`. Trừ khi một đường dẫn cụ thể
+được cung cấp, tất cả package commands sẽ được chạy tại thời điểm thư mục hoạt động
+. Danh sách đầy đủ commands và flags Move CLI có thể tìm thấy bằng `move --help`.
 
-### Usage
+### Cách sử dụng
 
-A package can be compiled either through the Move CLI commands, or as a library
-command in Rust with the function `compile_package`. This will create a
-`CompiledPackage` that holds the compiled bytecode along with other compilation
-artifacts (source maps, documentation, ABIs) in memory. This `CompiledPackage`
-can be converted to an `OnDiskPackage` and vice versa -- the latter being the data of
-the `CompiledPackage` laid out in the file system in the following format:
+Một package có thể được compiled qua Move CLI commands, hoặc một thư viện
+command trong Rust với function `compile_package`. Điều này sẽ tạo một
+`CompiledPackage` chứa compiled bytecode cùng với compilation
+artifacts khác (source maps, documentation, ABIs) trong bộ nhớ. `CompiledPackage`
+có thể được converted tới một `OnDiskPackage` và ngược lại -- sau đó trở thành dữ liệu của
+`CompiledPackage` đặt trong file system với format dưới đây:
 
 ```
 a_move_package
@@ -288,5 +279,5 @@ a_move_package
         └── sources
 ```
 
-See the `move-package` crate for more information on these data structures and
-how to use the Move package system as a Rust library.
+Xem `move-package` để biết thêm thông tin về cấu trúc dữ liệu structures và
+cách sử dụng Move package system như là một thư viện Rust.
