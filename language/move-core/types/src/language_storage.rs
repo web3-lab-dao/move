@@ -40,6 +40,14 @@ pub enum TypeTag {
     Vector(Box<TypeTag>),
     #[serde(rename = "struct", alias = "Struct")]
     Struct(StructTag),
+
+    // NOTE: Added in bytecode version v6, do not reorder!
+    #[serde(rename = "u16", alias = "U16")]
+    U16,
+    #[serde(rename = "u32", alias = "U32")]
+    U32,
+    #[serde(rename = "u256", alias = "U256")]
+    U256,
 }
 
 impl TypeTag {
@@ -58,8 +66,11 @@ impl TypeTag {
         match self {
             Bool => "bool".to_owned(),
             U8 => "u8".to_owned(),
+            U16 => "u16".to_owned(),
+            U32 => "u32".to_owned(),
             U64 => "u64".to_owned(),
             U128 => "u128".to_owned(),
+            U256 => "u256".to_owned(),
             Address => "address".to_owned(),
             Signer => "signer".to_owned(),
             Vector(t) => format!("vector<{}>", t.to_canonical_string()),
@@ -232,8 +243,11 @@ impl Display for TypeTag {
             TypeTag::Struct(s) => write!(f, "{}", s),
             TypeTag::Vector(ty) => write!(f, "vector<{}>", ty),
             TypeTag::U8 => write!(f, "u8"),
+            TypeTag::U16 => write!(f, "u16"),
+            TypeTag::U32 => write!(f, "u32"),
             TypeTag::U64 => write!(f, "u64"),
             TypeTag::U128 => write!(f, "u128"),
+            TypeTag::U256 => write!(f, "u256"),
             TypeTag::Address => write!(f, "address"),
             TypeTag::Signer => write!(f, "signer"),
             TypeTag::Bool => write!(f, "bool"),

@@ -2,7 +2,7 @@
 // Copyright (c) The Move Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::{account_address::AccountAddress, value::MoveValue};
+use crate::{account_address::AccountAddress, u256, value::MoveValue};
 use anyhow::{anyhow, Error, Result};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryFrom, fmt};
@@ -15,6 +15,10 @@ pub enum TransactionArgument {
     Address(AccountAddress),
     U8Vector(#[serde(with = "serde_bytes")] Vec<u8>),
     Bool(bool),
+    // NOTE: Added in bytecode version v6, do not reorder!
+    U16(u16),
+    U32(u32),
+    U256(u256::U256),
 }
 
 impl fmt::Debug for TransactionArgument {
@@ -28,6 +32,9 @@ impl fmt::Debug for TransactionArgument {
             TransactionArgument::U8Vector(vector) => {
                 write!(f, "{{U8Vector: 0x{}}}", hex::encode(vector))
             }
+            TransactionArgument::U16(value) => write!(f, "{{U16: {}}}", value),
+            TransactionArgument::U32(value) => write!(f, "{{U32: {}}}", value),
+            TransactionArgument::U256(value) => write!(f, "{{U256: {}}}", value),
         }
     }
 }
@@ -41,6 +48,9 @@ impl From<TransactionArgument> for MoveValue {
             TransactionArgument::Address(a) => MoveValue::Address(a),
             TransactionArgument::Bool(b) => MoveValue::Bool(b),
             TransactionArgument::U8Vector(v) => MoveValue::vector_u8(v),
+            TransactionArgument::U16(i) => MoveValue::U16(i),
+            TransactionArgument::U32(i) => MoveValue::U32(i),
+            TransactionArgument::U256(i) => MoveValue::U256(i),
         }
     }
 }
@@ -68,6 +78,9 @@ impl TryFrom<MoveValue> for TransactionArgument {
             MoveValue::Signer(_) | MoveValue::Struct(_) => {
                 return Err(anyhow!("invalid transaction argument: {:?}", val))
             }
+            MoveValue::U16(i) => TransactionArgument::U16(i),
+            MoveValue::U32(i) => TransactionArgument::U32(i),
+            MoveValue::U256(i) => TransactionArgument::U256(i),
         })
     }
 }
